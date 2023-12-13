@@ -2,7 +2,8 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import dat from 'dat.gui';  // Import dat.gui correctly
+// Import dat.gui 
+import dat from 'dat.gui';
 
 // Set up scene
 const scene = new THREE.Scene();
@@ -21,15 +22,32 @@ let shoeModel; // Variable to store the loaded model
 
 // Object to store material parameters for each part
 const materialParameters = {
-    laces: { color: 0xff0000 },      // Replace with desired color
-    sole_1: { color: 0x00ff00 },    // Replace with desired color
-    sole_2: { color: 0x0000ff },    // Replace with desired color
-    inside: { color: 0xffff00 },    // Replace with desired color
-    outside_1: { color: 0xff00ff }, // Replace with desired color
-    outside_2: { color: 0x00ffff }  // Replace with desired color
+    laces: {
+        color: 0xff0000,
+    },
+    sole_1: {
+        color: 0x00ff00,
+    },
+    sole_2: {
+        color: 0x0000ff,
+    },
+    inside: {
+        color: 0xff0000,
+    },
+    outside_1: {
+        color: 0xff00ff,
+    },
+    outside_2: {
+        color: 0x00ffff,
+    },
 };
 
-loader.load('./public/models/shoe-optimized-arne.glb', function (gltf) {
+// Function to create a MeshStandardMaterial with the desired properties
+function createMaterial(params) {
+    return new THREE.MeshStandardMaterial(params);
+}
+
+loader.load('models/shoe-optimized-arne.glb', function (gltf) {
     shoeModel = gltf.scene;
 
     // Set the position of the shoeModel
@@ -38,16 +56,12 @@ loader.load('./public/models/shoe-optimized-arne.glb', function (gltf) {
     // Traverse through the model and assign materials to specific parts
     shoeModel.traverse((child) => {
         if (child.isMesh) {
-            // Access the material parameter based on the part's name
             const partName = child.name;
             const partMaterial = materialParameters[partName];
 
             if (partMaterial) {
-                // Create a new material with the desired color
-                const colorMaterial = new THREE.MeshBasicMaterial({ color: partMaterial.color });
-
-                // Assign the new material to the mesh
-                child.material = colorMaterial;
+                // Create a new material
+                child.material = createMaterial(partMaterial);
             }
         }
     });
@@ -72,8 +86,18 @@ function updatePartColor(partName, color) {
     if (shoeModel) {
         shoeModel.traverse((child) => {
             if (child.isMesh && child.name === partName) {
-                const colorMaterial = new THREE.MeshBasicMaterial({ color });
-                child.material = colorMaterial;
+                child.material.color.set(color);
+            }
+        });
+    }
+}
+
+// Function to update the roughness of a specific part
+function updatePartRoughness(partName, roughness) {
+    if (shoeModel) {
+        shoeModel.traverse((child) => {
+            if (child.isMesh && child.name === partName) {
+                child.material.roughness = roughness;
             }
         });
     }
