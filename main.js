@@ -24,6 +24,9 @@ let shoeModel; // Variable to store the loaded model
 const materialParameters = {
     laces: {
         color: 0xff0000,
+        normalMap: '/textures/Paper_Embossed_001_normal.jpg', // Updated normal map location
+        aoMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_ambientOcclusion.jpg'), // Added ambient occlusion map
+        displacementMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_height.png'), // Added height map
     },
     sole_1: {
         color: 0x00ff00,
@@ -43,34 +46,44 @@ const materialParameters = {
     outside_2: {
         color: 0x00ffff,
     },
-    };
-    
-    function createMaterial(params) {
-        const { normalMap, map, aoMap, displacementMap, ...otherParams } = params;
-        const material = new THREE.MeshStandardMaterial(otherParams);
-    
-        // Check if a normal map is provided and set it if available
-        if (normalMap) {
-            material.normalMap = new THREE.TextureLoader().load(normalMap);
-            material.normalMap.wrapS = THREE.RepeatWrapping;
-            material.normalMap.wrapT = THREE.RepeatWrapping;
-        }
-    
-        // Check if an ambient occlusion map is provided and set it if available
-        if (aoMap) {
-            material.aoMap = aoMap;
-        }
-    
-        // Check if a displacement map is provided and set it if available
-        if (displacementMap) {
-            material.displacementMap = displacementMap;
-            material.displacementMap.wrapS = THREE.RepeatWrapping;
-            material.displacementMap.wrapT = THREE.RepeatWrapping;
-            material.displacementScale = 0.1; // Adjust the scale as needed
-        }
-    
-        return material;
+};
+
+function createMaterial(params) {
+    const { normalMap, map, aoMap, displacementMap, roughnessMap, ...otherParams } = params;
+    const material = new THREE.MeshStandardMaterial(otherParams);
+
+    // Check if a normal map is provided and set it if available
+    if (normalMap) {
+        material.normalMap = new THREE.TextureLoader().load(normalMap);
+        material.normalMap.wrapS = THREE.RepeatWrapping;
+        material.normalMap.wrapT = THREE.RepeatWrapping;
     }
+
+    // Check if an ambient occlusion map is provided and set it if available
+    if (aoMap) {
+        material.aoMap = aoMap;
+    }
+
+    // Check if a displacement map is provided and set it if available
+    if (displacementMap) {
+        material.displacementMap = displacementMap;
+        material.displacementMap.wrapS = THREE.RepeatWrapping;
+        material.displacementMap.wrapT = THREE.RepeatWrapping;
+        material.displacementScale = 0.1; // Adjust the scale as needed
+    }
+
+    // Check if a base color map is provided and set it if available
+    if (map) {
+        material.map = new THREE.TextureLoader().load(map);
+    }
+
+    // Check if a roughness map is provided and set it if available
+    if (roughnessMap) {
+        material.roughnessMap = new THREE.TextureLoader().load(roughnessMap);
+    }
+
+    return material;
+}
     
 
 
