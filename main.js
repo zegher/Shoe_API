@@ -161,16 +161,32 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Set up plane material
+const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE.DoubleSide });
+
 // Add orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
 
 // Set up plane underneath cube
 const planeGeometry = new THREE.PlaneGeometry(5, 5, 32);
-const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE.DoubleSide });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.rotation.x = Math.PI / 2;
 plane.position.y = -1;
 scene.add(plane);
+
+// Set up plane underneath cube with mirror-like material
+const mirrorMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,  // Set color to white for reflections
+    roughness: 0.1,   // Adjust the roughness
+    metalness: 0.5,   // Adjust the metalness
+    envMap: scene.background,  // Use the scene background as the environment map for reflections
+    side: THREE.DoubleSide,
+});
+
+const mirrorPlane = new THREE.Mesh(planeGeometry, mirrorMaterial);
+mirrorPlane.rotation.x = Math.PI / 2;
+mirrorPlane.position.y = -1;
+scene.add(mirrorPlane);
 
 // Set camera position
 camera.position.z = 5;
