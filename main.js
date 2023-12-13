@@ -2,8 +2,13 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 // Import dat.gui 
 import dat from 'dat.gui';
+
+// Import Tween.js
+import * as TWEEN from 'tween.js';
+
 
 // Set up scene
 const scene = new THREE.Scene();
@@ -200,6 +205,60 @@ mirrorPlane.rotation.x = Math.PI / 2;
 mirrorPlane.position.y = -1;
 scene.add(mirrorPlane);
 
+// Set up raycaster and mouse vector
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Event listener for mouse clicks
+document.addEventListener('click', onDocumentClick);
+
+function onDocumentClick(event) {
+    // Calculate mouse position in normalized device coordinates
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    // Set the raycaster's ray direction and origin based on the mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // Check for intersections with the shoeModel
+    const intersects = raycaster.intersectObject(shoeModel, true);
+
+    if (intersects.length > 0) {
+        // Get the clicked part
+        const clickedPart = intersects[0].object;
+
+        // Set up camera position to focus on the clicked part
+        const newPosition = clickedPart.position.clone().add(shoeModel.position);
+        const lookAtPosition = shoeModel.position.clone();
+
+        // Animate the camera to the new position and look at the clicked part
+        animateCamera(newPosition, lookAtPosition);
+    }
+}
+
+function animateCamera(newPosition, lookAtPosition) {
+    const tweenPosition = new TWEEN.Tween(camera.position)
+        .to(newPosition, 1000)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(() => {
+            // Empty onUpdate to ensure smooth tweening
+        })
+        .onComplete(() => {
+            controls.update(); // Update controls after the animation is complete
+        })
+        .start();
+
+    const tweenLookAt = new TWEEN.Tween(camera.lookAt(lookAtPosition))
+        .to({}, 1000)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(() => {
+            // Empty onUpdate to ensure smooth tweening
+        })
+        .start();
+}
+
+
+
 
 // Set camera position
 camera.position.z = 5;
@@ -259,6 +318,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 function animate() {
     requestAnimationFrame(animate);
 
+    // Update Tween.js
+    TWEEN.update();
+
     // Rotate the loaded model
     if (shoeModel) {
         shoeModel.rotation.y += 0.001;
@@ -267,6 +329,7 @@ function animate() {
     // Update controls
     controls.update();
 
+    // Render the scene
     renderer.render(scene, camera);
 }
 
