@@ -17,14 +17,66 @@ scene.background = new THREE.CubeTextureLoader().setPath("/cubemap/").load([
 // Load in model from /models
 const loader = new GLTFLoader();
 let shoeModel; // Variable to store the loaded model
+
+// Object to store material parameters for each part
+const materialParameters = {
+    laces: { color: 0xff0000 },      // Replace with desired color
+    sole_1: { color: 0x00ff00 },    // Replace with desired color
+    sole_2: { color: 0x0000ff },    // Replace with desired color
+    inside: { color: 0xffff00 },    // Replace with desired color
+    outside_1: { color: 0xff00ff }, // Replace with desired color
+    outside_2: { color: 0x00ffff }  // Replace with desired color
+};
+
 loader.load('./public/models/shoe-optimized-arne.glb', function (gltf) {
     shoeModel = gltf.scene;
+
     // Set the position of the shoeModel
     shoeModel.position.set(0, 0, 0);
+
+    // Traverse through the model and assign materials to specific parts
+    shoeModel.traverse((child) => {
+        if (child.isMesh) {
+            // Access the material parameter based on the part's name
+            const partName = child.name;
+            const partMaterial = materialParameters[partName];
+
+            if (partMaterial) {
+                // Create a new material with the desired color
+                const colorMaterial = new THREE.MeshBasicMaterial({ color: partMaterial.color });
+
+                // Assign the new material to the mesh
+                child.material = colorMaterial;
+            }
+        }
+    });
+
     scene.add(shoeModel);
+
+    // Add dat.gui for color adjustment
+    const gui = new dat.GUI();
+    for (const partName in materialParameters) {
+        const folder = gui.addFolder(partName);
+        folder.addColor(materialParameters[partName], 'color').onChange(function (value) {
+            updatePartColor(partName, value);
+        });
+        folder.open();
+    }
 }, undefined, function (error) {
     console.error(error);
 });
+
+// Function to update the color of a specific part
+function updatePartColor(partName, color) {
+    if (shoeModel) {
+        shoeModel.traverse((child) => {
+            if (child.isMesh && child.name === partName) {
+                const colorMaterial = new THREE.MeshBasicMaterial({ color });
+                child.material = colorMaterial;
+            }
+        });
+    }
+}
 
 // Set up camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -49,7 +101,7 @@ scene.add(plane);
 camera.position.z = 5;
 
 // Add ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff,1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 
 // Add point lights
@@ -66,7 +118,7 @@ pointLight3.position.set(0, 2, 3);
 scene.add(pointLight3);
 
 const pointLight4 = new THREE.PointLight(0xffffff, 1); // geel - verste lamp als je inspawnt
-pointLight4.position.set(0, 2, -3); 
+pointLight4.position.set(0, 2, -3);
 scene.add(pointLight4);
 
 // add pointlight helper
