@@ -167,14 +167,26 @@ const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE
 // Add orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
 
-// Set up plane underneath cube
-const planeGeometry = new THREE.PlaneGeometry(5, 5, 32);
-const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+// Set up plane with rounded corners
+const roundedRectShape = new THREE.Shape();
+const radius = 0.5; // Adjust the radius for the rounded corners
+roundedRectShape.moveTo(-2.5 + radius, -2.5);
+roundedRectShape.lineTo(2.5 - radius, -2.5);
+roundedRectShape.quadraticCurveTo(2.5, -2.5, 2.5, -2.5 + radius);
+roundedRectShape.lineTo(2.5, 2.5 - radius);
+roundedRectShape.quadraticCurveTo(2.5, 2.5, 2.5 - radius, 2.5);
+roundedRectShape.lineTo(-2.5 + radius, 2.5);
+roundedRectShape.quadraticCurveTo(-2.5, 2.5, -2.5, 2.5 - radius);
+roundedRectShape.lineTo(-2.5, -2.5 + radius);
+roundedRectShape.quadraticCurveTo(-2.5, -2.5, -2.5 + radius, -2.5);
+
+const roundedRectGeometry = new THREE.ShapeGeometry(roundedRectShape);
+const plane = new THREE.Mesh(roundedRectGeometry, planeMaterial);
 plane.rotation.x = Math.PI / 2;
 plane.position.y = -1;
 scene.add(plane);
 
-// Set up plane underneath cube with mirror-like material
+// Set up plane with mirror-like material
 const mirrorMaterial = new THREE.MeshStandardMaterial({
     color: 0xffffff,  // Set color to white for reflections
     roughness: 0.1,   // Adjust the roughness
@@ -183,10 +195,11 @@ const mirrorMaterial = new THREE.MeshStandardMaterial({
     side: THREE.DoubleSide,
 });
 
-const mirrorPlane = new THREE.Mesh(planeGeometry, mirrorMaterial);
+const mirrorPlane = new THREE.Mesh(roundedRectGeometry, mirrorMaterial);
 mirrorPlane.rotation.x = Math.PI / 2;
 mirrorPlane.position.y = -1;
 scene.add(mirrorPlane);
+
 
 // Set camera position
 camera.position.z = 5;
