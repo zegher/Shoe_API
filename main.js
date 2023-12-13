@@ -49,24 +49,24 @@ scene.add(plane);
 camera.position.z = 5;
 
 // Add ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffffff,1);
 scene.add(ambientLight);
 
 // Add point lights
-const pointLight1 = new THREE.PointLight(0x00ff00, 1);
-pointLight1.position.set(-2.5, 2, 2);
+const pointLight1 = new THREE.PointLight(0xffffff, 1); // groen - linkse lamp als je inspawnt
+pointLight1.position.set(-2.5, 2, 0);
 scene.add(pointLight1);
 
-const pointLight2 = new THREE.PointLight(0x0000ff, 1);
-pointLight2.position.set(2.5, 2, -1);
+const pointLight2 = new THREE.PointLight(0xffffff, 1); //blauw  - rechtse lamp als je inspawnt
+pointLight2.position.set(2.5, 2, 0);
 scene.add(pointLight2);
 
-const pointLight3 = new THREE.PointLight(0xff0000, 1);
-pointLight3.position.set(-1, 2, 3);
+const pointLight3 = new THREE.PointLight(0xffffff, 1); // rood  - voorste lamp als je inspawnt
+pointLight3.position.set(0, 2, 3);
 scene.add(pointLight3);
 
-const pointLight4 = new THREE.PointLight(0xffff00, 1);
-pointLight4.position.set(-1, 2, -3);
+const pointLight4 = new THREE.PointLight(0xffffff, 1); // geel - verste lamp als je inspawnt
+pointLight4.position.set(0, 2, -3); 
 scene.add(pointLight4);
 
 // add pointlight helper
