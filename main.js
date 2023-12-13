@@ -33,7 +33,9 @@ const materialParameters = {
     },
     inside: {
         color: 0xff0000,
+        normalMap: '/textures/Fabric_034_normal.jpg', // Updated normal map location
     },
+    
     outside_1: {
         color: 0xff00ff,
     },
@@ -42,10 +44,20 @@ const materialParameters = {
     },
 };
 
-// Function to create a MeshStandardMaterial with the desired properties
 function createMaterial(params) {
-    return new THREE.MeshStandardMaterial(params);
+    const { normalMap, ...otherParams } = params;
+    const material = new THREE.MeshStandardMaterial(otherParams);
+
+    // Check if a normal map is provided and set it if available
+    if (normalMap) {
+        material.normalMap = new THREE.TextureLoader().load(normalMap);
+        material.normalMap.wrapS = THREE.RepeatWrapping;
+        material.normalMap.wrapT = THREE.RepeatWrapping;
+    }
+
+    return material;
 }
+
 
 loader.load('models/shoe-optimized-arne.glb', function (gltf) {
     shoeModel = gltf.scene;
