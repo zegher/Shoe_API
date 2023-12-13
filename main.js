@@ -33,6 +33,9 @@ const materialParameters = {
     },
     sole_2: {
         color: 0x0000ff,
+        normalMap: '/textures/Fabric_Silk_001_normal.jpg', // Updated normal map location
+        aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_ambientOcclusion.jpg'), // Added ambient occlusion map
+        displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_height.png'), // Added height map
     },
     inside: {
         color: 0xff0000,
@@ -49,7 +52,7 @@ const materialParameters = {
 };
 
 function createMaterial(params) {
-    const { normalMap, map, aoMap, displacementMap, roughnessMap, ...otherParams } = params;
+    const { normalMap, map, aoMap, displacementMap, roughnessMap, color, ...otherParams } = params;
     const material = new THREE.MeshStandardMaterial(otherParams);
 
     // Check if a normal map is provided and set it if available
@@ -82,11 +85,18 @@ function createMaterial(params) {
         material.roughnessMap = new THREE.TextureLoader().load(roughnessMap);
     }
 
+    // Check if a color is provided and set it with adjusted intensity
+    if (color) {
+        const adjustedColor = new THREE.Color(color);
+        adjustedColor.multiplyScalar(0.5); // Adjust the scalar value as needed
+        material.color = adjustedColor;
+    }
+
     return material;
 }
-    
 
 
+// Load the model
 loader.load('models/shoe-optimized-arne.glb', function (gltf) {
     shoeModel = gltf.scene;
 
@@ -186,6 +196,13 @@ const pointLight4 = new THREE.PointLight(0xffffff, 1); // geel - verste lamp als
 pointLight4.position.set(0, 2, -3);
 scene.add(pointLight4);
 
+/*
+// add orange pointlight 5
+const pointLight5 = new THREE.PointLight(0xffffff, 1); // oranje -- onderste licht
+pointLight5.position.set(0, -0.8, 0);
+scene.add(pointLight5);
+*/
+
 // add pointlight helper
 const pointLightHelper1 = new THREE.PointLightHelper(pointLight1, 1);
 scene.add(pointLightHelper1);
@@ -198,6 +215,12 @@ scene.add(pointLightHelper3);
 
 const pointLightHelper4 = new THREE.PointLightHelper(pointLight4, 1);
 scene.add(pointLightHelper4);
+
+/*
+// add pointlight 5 helper
+const pointLightHelper5 = new THREE.PointLightHelper(pointLight5, 1);
+scene.add(pointLightHelper5);
+*/
 
 // Add shadows
 renderer.shadowMap.enabled = true;
