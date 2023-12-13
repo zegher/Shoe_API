@@ -2,6 +2,7 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import dat from 'dat.gui';  // Import dat.gui correctly
 
 // Set up scene
 const scene = new THREE.Scene();
