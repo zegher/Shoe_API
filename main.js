@@ -34,29 +34,44 @@ const materialParameters = {
     inside: {
         color: 0xff0000,
         normalMap: '/textures/Fabric_034_normal.jpg', // Updated normal map location
+        aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_ambientOcclusion.jpg'), // Added ambient occlusion map
+        displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_height.png'), // Added height map
     },
-    
     outside_1: {
         color: 0xff00ff,
     },
     outside_2: {
         color: 0x00ffff,
     },
-};
-
-function createMaterial(params) {
-    const { normalMap, ...otherParams } = params;
-    const material = new THREE.MeshStandardMaterial(otherParams);
-
-    // Check if a normal map is provided and set it if available
-    if (normalMap) {
-        material.normalMap = new THREE.TextureLoader().load(normalMap);
-        material.normalMap.wrapS = THREE.RepeatWrapping;
-        material.normalMap.wrapT = THREE.RepeatWrapping;
+    };
+    
+    function createMaterial(params) {
+        const { normalMap, map, aoMap, displacementMap, ...otherParams } = params;
+        const material = new THREE.MeshStandardMaterial(otherParams);
+    
+        // Check if a normal map is provided and set it if available
+        if (normalMap) {
+            material.normalMap = new THREE.TextureLoader().load(normalMap);
+            material.normalMap.wrapS = THREE.RepeatWrapping;
+            material.normalMap.wrapT = THREE.RepeatWrapping;
+        }
+    
+        // Check if an ambient occlusion map is provided and set it if available
+        if (aoMap) {
+            material.aoMap = aoMap;
+        }
+    
+        // Check if a displacement map is provided and set it if available
+        if (displacementMap) {
+            material.displacementMap = displacementMap;
+            material.displacementMap.wrapS = THREE.RepeatWrapping;
+            material.displacementMap.wrapT = THREE.RepeatWrapping;
+            material.displacementScale = 0.1; // Adjust the scale as needed
+        }
+    
+        return material;
     }
-
-    return material;
-}
+    
 
 
 loader.load('models/shoe-optimized-arne.glb', function (gltf) {
