@@ -108,6 +108,7 @@ loader.load('models/shoe-optimized-arne.glb', function (gltf) {
 
     // Tilt the shoe forward (nose down) by adjusting the rotation
     shoeModel.rotation.x = Math.PI / 4; // Adjust the angle as needed
+    shoeModel.rotation.y = Math.PI / 50;
 
     // Traverse through the model and assign materials to specific parts
     shoeModel.traverse((child) => {
@@ -272,6 +273,9 @@ pointLight5.position.set(0, -0.8, 0);
 scene.add(pointLight5);
 */
 
+
+/*
+
 // add pointlight helper
 const pointLightHelper1 = new THREE.PointLightHelper(pointLight1, 1);
 scene.add(pointLightHelper1);
@@ -284,6 +288,8 @@ scene.add(pointLightHelper3);
 
 const pointLightHelper4 = new THREE.PointLightHelper(pointLight4, 1);
 scene.add(pointLightHelper4);
+
+*/
 
 /*
 // add pointlight 5 helper
