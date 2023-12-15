@@ -25,24 +25,24 @@ let shoeModel; // Variable to store the loaded model
 const materialParameters = {
     laces: {
         color: 0xff0000,
-        normalMap: '/textures/Paper_Embossed_001_normal.jpg', // Updated normal map location
-        aoMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_ambientOcclusion.jpg'), // Added ambient occlusion map
-        displacementMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_height.png'), // Added height map
+        normalMap: '/textures/Paper_Embossed_001_normal.jpg',
+        aoMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_ambientOcclusion.jpg'),
+        displacementMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_height.png'),
     },
     sole_1: {
         color: 0x00ff00,
     },
     sole_2: {
         color: 0x0000ff,
-        normalMap: '/textures/Fabric_Silk_001_normal.jpg', // Updated normal map location
-        aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_ambientOcclusion.jpg'), // Added ambient occlusion map
-        displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_height.png'), // Added height map
+        normalMap: '/textures/Fabric_Silk_001_normal.jpg',
+        aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_ambientOcclusion.jpg'),
+        displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_height.png'),
     },
     inside: {
         color: 0xff0000,
-        normalMap: '/textures/Fabric_034_normal.jpg', // Updated normal map location
-        aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_ambientOcclusion.jpg'), // Added ambient occlusion map
-        displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_height.png'), // Added height map
+        normalMap: '/textures/Fabric_034_normal.jpg',
+        aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_ambientOcclusion.jpg'),
+        displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_height.png'),
     },
     outside_1: {
         color: 0xff00ff,
@@ -52,74 +52,73 @@ const materialParameters = {
     },
 };
 
+// Object to store material information for each part
+const materialInfo = {};
+
 function createMaterial(params) {
     const { normalMap, map, aoMap, displacementMap, roughnessMap, color, ...otherParams } = params;
     const material = new THREE.MeshStandardMaterial(otherParams);
 
-    // Check if a normal map is provided and set it if available
     if (normalMap) {
         material.normalMap = new THREE.TextureLoader().load(normalMap);
         material.normalMap.wrapS = THREE.RepeatWrapping;
         material.normalMap.wrapT = THREE.RepeatWrapping;
     }
 
-    // Check if an ambient occlusion map is provided and set it if available
     if (aoMap) {
         material.aoMap = aoMap;
     }
 
-    // Check if a displacement map is provided and set it if available
     if (displacementMap) {
         material.displacementMap = displacementMap;
         material.displacementMap.wrapS = THREE.RepeatWrapping;
         material.displacementMap.wrapT = THREE.RepeatWrapping;
-        material.displacementScale = 0.1; // Adjust the scale as needed
+        material.displacementScale = 0.1;
     }
 
-    // Check if a base color map is provided and set it if available
     if (map) {
         material.map = new THREE.TextureLoader().load(map);
     }
 
-    // Check if a roughness map is provided and set it if available
     if (roughnessMap) {
         material.roughnessMap = new THREE.TextureLoader().load(roughnessMap);
     }
 
-    // Check if a color is provided and set it with adjusted intensity
     if (color) {
         const adjustedColor = new THREE.Color(color);
-        adjustedColor.multiplyScalar(0.5); // Adjust the scalar value as needed
+        adjustedColor.multiplyScalar(0.5);
         material.color = adjustedColor;
+
+        // Store material information
+        materialInfo[params.name] = {
+            color: adjustedColor.getHex(),
+            // Add other material properties you want to store
+        };
     }
 
     return material;
 }
 
-
 // Load the model
 loader.load('models/shoe-optimized-arne.glb', function (gltf) {
     shoeModel = gltf.scene;
 
-    // Set the position of the shoeModel
     shoeModel.position.set(0, 0, 0);
 
-    // Traverse through the model and assign materials to specific parts
     shoeModel.traverse((child) => {
         if (child.isMesh) {
             const partName = child.name;
             const partMaterial = materialParameters[partName];
 
             if (partMaterial) {
-                // Create a new material
-                child.material = createMaterial(partMaterial);
+                const material = createMaterial({ ...partMaterial, name: partName });
+                child.material = material;
             }
         }
     });
 
     scene.add(shoeModel);
 
-    // Add dat.gui for color adjustment
     const gui = new dat.GUI();
     for (const partName in materialParameters) {
         const folder = gui.addFolder(partName);
@@ -132,12 +131,14 @@ loader.load('models/shoe-optimized-arne.glb', function (gltf) {
     console.error(error);
 });
 
-// Function to update the color of a specific part
 function updatePartColor(partName, color) {
     if (shoeModel) {
         shoeModel.traverse((child) => {
             if (child.isMesh && child.name === partName) {
                 child.material.color.set(color);
+
+                // Update the stored material information
+                materialInfo[partName].color = color.getHex();
             }
         });
     }
@@ -167,6 +168,51 @@ const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE
 
 // Add orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
+
+// Set up raycaster and mouse vector
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Event listener for mouse clicks
+document.addEventListener('click', onDocumentClick);
+
+function onDocumentClick(event) {
+    // Calculate mouse position in normalized device coordinates
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    // Set the raycaster's ray direction and origin based on the mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // Check for intersections with the shoeModel
+    const intersects = raycaster.intersectObject(shoeModel, true);
+
+    if (intersects.length > 0) {
+        // Get the clicked part
+        const clickedPart = intersects[0].object;
+
+        // Log the name of the clicked part to the console
+        console.log('Clicked part:', clickedPart.name);
+    }
+}
+
+// Example usage of the stored material information
+function saveMaterialInfoToAPI() {
+    fetch('your/api/endpoint', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(materialInfo),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Material information saved:', data);
+    })
+    .catch(error => {
+        console.error('Error saving material information:', error);
+    });
+}
 
 // Set up plane with rounded corners
 const roundedRectShape = new THREE.Shape();
@@ -201,32 +247,6 @@ mirrorPlane.rotation.x = Math.PI / 2;
 mirrorPlane.position.y = -1;
 scene.add(mirrorPlane);
 
-// Set up raycaster and mouse vector
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-// Event listener for mouse clicks
-document.addEventListener('click', onDocumentClick);
-
-function onDocumentClick(event) {
-    // Calculate mouse position in normalized device coordinates
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-    // Set the raycaster's ray direction and origin based on the mouse position
-    raycaster.setFromCamera(mouse, camera);
-
-    // Check for intersections with the shoeModel
-    const intersects = raycaster.intersectObject(shoeModel, true);
-
-    if (intersects.length > 0) {
-        // Get the clicked part
-        const clickedPart = intersects[0].object;
-
-        // Log the name of the clicked part to the console
-        console.log('Clicked part:', clickedPart.name);
-    }
-}
 
 // Set camera position
 camera.position.z = 5;
