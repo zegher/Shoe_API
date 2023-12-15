@@ -103,22 +103,28 @@ function createMaterial(params) {
 loader.load('models/shoe-optimized-arne.glb', function (gltf) {
     shoeModel = gltf.scene;
 
-    shoeModel.position.set(0, 0, 0);
+    // Set the position of the shoeModel
+    shoeModel.position.set(0, 1, 0);
 
+    // Tilt the shoe forward (nose down) by adjusting the rotation
+    shoeModel.rotation.x = Math.PI / 4; // Adjust the angle as needed
+
+    // Traverse through the model and assign materials to specific parts
     shoeModel.traverse((child) => {
         if (child.isMesh) {
             const partName = child.name;
             const partMaterial = materialParameters[partName];
 
             if (partMaterial) {
-                const material = createMaterial({ ...partMaterial, name: partName });
-                child.material = material;
+                // Create a new material
+                child.material = createMaterial({ ...partMaterial, name: partName });
             }
         }
     });
 
     scene.add(shoeModel);
 
+    // Add dat.gui for color adjustment
     const gui = new dat.GUI();
     for (const partName in materialParameters) {
         const folder = gui.addFolder(partName);
@@ -131,25 +137,12 @@ loader.load('models/shoe-optimized-arne.glb', function (gltf) {
     console.error(error);
 });
 
+// Function to update the color of a specific part
 function updatePartColor(partName, color) {
     if (shoeModel) {
         shoeModel.traverse((child) => {
             if (child.isMesh && child.name === partName) {
                 child.material.color.set(color);
-
-                // Update the stored material information
-                materialInfo[partName].color = color.getHex();
-            }
-        });
-    }
-}
-
-// Function to update the roughness of a specific part
-function updatePartRoughness(partName, roughness) {
-    if (shoeModel) {
-        shoeModel.traverse((child) => {
-            if (child.isMesh && child.name === partName) {
-                child.material.roughness = roughness;
             }
         });
     }
@@ -308,7 +301,7 @@ function animate() {
 
     // Rotate the loaded model
     if (shoeModel) {
-        shoeModel.rotation.y += 0.001;
+      ///  shoeModel.rotation.y += 0.001;
     }
 
     // Update controls
