@@ -6,10 +6,6 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // Import dat.gui 
 import dat from 'dat.gui';
 
-// Import Tween.js
-import * as TWEEN from 'tween.js';
-
-
 // Set up scene
 const scene = new THREE.Scene();
 scene.background = new THREE.CubeTextureLoader().setPath("/cubemap/").load([
@@ -227,38 +223,10 @@ function onDocumentClick(event) {
         // Get the clicked part
         const clickedPart = intersects[0].object;
 
-        // Set up camera position to focus on the clicked part
-        const newPosition = clickedPart.position.clone().add(shoeModel.position);
-        const lookAtPosition = shoeModel.position.clone();
-
-        // Animate the camera to the new position and look at the clicked part
-        animateCamera(newPosition, lookAtPosition);
+        // Log the name of the clicked part to the console
+        console.log('Clicked part:', clickedPart.name);
     }
 }
-
-function animateCamera(newPosition, lookAtPosition) {
-    const tweenPosition = new TWEEN.Tween(camera.position)
-        .to(newPosition, 1000)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(() => {
-            // Empty onUpdate to ensure smooth tweening
-        })
-        .onComplete(() => {
-            controls.update(); // Update controls after the animation is complete
-        })
-        .start();
-
-    const tweenLookAt = new TWEEN.Tween(camera.lookAt(lookAtPosition))
-        .to({}, 1000)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(() => {
-            // Empty onUpdate to ensure smooth tweening
-        })
-        .start();
-}
-
-
-
 
 // Set camera position
 camera.position.z = 5;
@@ -318,9 +286,6 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 function animate() {
     requestAnimationFrame(animate);
 
-    // Update Tween.js
-    TWEEN.update();
-
     // Rotate the loaded model
     if (shoeModel) {
         shoeModel.rotation.y += 0.001;
@@ -332,6 +297,7 @@ function animate() {
     // Render the scene
     renderer.render(scene, camera);
 }
+
 
 // Start animation
 animate();
