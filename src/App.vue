@@ -8,11 +8,13 @@
         <div class="black-div">
           <h2>Laces Color</h2>
           <!-- Button and ellipses added here -->
-            <div class="ellipses-container">
-              <div v-for="(color, index) in ellipseColors" :key="index" class="ellipse" :style="{ backgroundColor: color, borderColor: strokeColor }"></div>
-              <div class="bottom-right">
-            <button @click="handleButtonClick">Click me</button>
-            </div>
+          <div class="ellipses-container">
+            <div v-for="(color, index) in ellipseColors" :key="index" class="ellipse" :style="{ backgroundColor: color, borderColor: strokeColor }"></div>
+          </div>
+          <div class="bottom-right">
+            <router-link to="/threejs-screen" v-slot="{ navigate }">
+              <button @click="navigate">Click me</button>
+            </router-link>
           </div>
         </div>
       </div>
@@ -32,12 +34,6 @@ export default {
       ellipseColors: ['#FFFFFF', '#484848', '#060606', '#FF0000', '#0000FF', '#1BBF00'],
       strokeColor: '#64F243',
     };
-  },
-  methods: {
-    handleButtonClick() {
-      // Add logic for button click if needed
-      console.log('Button clicked!');
-    },
   },
 };
 </script>
