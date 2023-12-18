@@ -1,6 +1,6 @@
 <!-- src/components/ThreeJS.vue -->
 <template>
-  <div class="left-side" ref="container"></div>
+    <div class="left-side" ref="container"></div>
 </template>
 
 <script>
@@ -36,31 +36,37 @@ export default {
     // Object to store material parameters for each part
     const materialParameters = {
         laces: {
-            color: 0xff0000,
+            color: 0xffffff,
             normalMap: '/textures/Paper_Embossed_001_normal.jpg',
+            /*
             aoMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_ambientOcclusion.jpg'),
             displacementMap: new THREE.TextureLoader().load('./models/textures/Paper_Embossed_001_height.png'),
+            */
         },
         sole_1: {
-            color: 0x00ff00,
+            color: 0xffffff,
         },
         sole_2: {
-            color: 0x0000ff,
+            color: 0xffffff,
             normalMap: '/textures/Fabric_Silk_001_normal.jpg',
+            /*
             aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_ambientOcclusion.jpg'),
             displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_Silk_001_height.png'),
+            */
         },
         inside: {
-            color: 0xff0000,
+            color:0xffffff,
             normalMap: '/textures/Fabric_034_normal.jpg',
+            /*
             aoMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_ambientOcclusion.jpg'),
             displacementMap: new THREE.TextureLoader().load('./models/textures/Fabric_034_height.png'),
+            */
         },
         outside_1: {
-            color: 0xff00ff,
+            color: 0xffffff,
         },
         outside_2: {
-            color: 0x00ffff,
+            color: 0xffffff,
         },
     };
 
@@ -137,6 +143,8 @@ export default {
 
         scene.add(shoeModel);
 
+        
+
         // Add dat.gui for color adjustment
         const gui = new dat.GUI();
         for (const partName in materialParameters) {
@@ -150,60 +158,65 @@ export default {
         console.error(error);
     });
 
-    // Function to update the color of a specific part
-    function updatePartColor(partName, color) {
-        if (shoeModel) {
-            shoeModel.traverse((child) => {
-                if (child.isMesh && child.name === partName) {
-                    child.material.color.set(color);
-                }
-            });
-        }
-    }
+// Function to update the color of a specific part
+function updatePartColor(partName, color) {
+  if (shoeModel) {
+    shoeModel.traverse((child) => {
+      if (child.isMesh && child.name === partName) {
+        child.material.color.set(color);
+      }
+    });
+  }
+}
 
-    // Event listener for window resize
-    window.addEventListener('resize', () => {
-        const newWidth = container.clientWidth;
-        const newHeight = container.clientHeight;
+// Event listener for window resize
+const handleResize = () => {
+  const newWidth = container.clientWidth;
+  const newHeight = container.clientHeight;
 
-        camera.aspect = newWidth / newHeight;
-        camera.updateProjectionMatrix();
+  camera.aspect = newWidth / newHeight;
+  camera.updateProjectionMatrix();
 
-        renderer.setSize(newWidth, newHeight);
-    })
+  renderer.setSize(newWidth, newHeight);
+};
 
-    // Set up plane material
-    const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE.DoubleSide });
+window.addEventListener('resize', handleResize);
 
-    // Add orbit controls
-    const controls = new OrbitControls(camera, renderer.domElement);
+// Set up plane material
+const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE.DoubleSide });
 
-    // Set up raycaster and mouse vector
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
+// Add orbit controls
+const controls = new OrbitControls(camera, renderer.domElement);
 
-    // Event listener for mouse clicks
-    document.addEventListener('click', onDocumentClick);
+// Set up raycaster and mouse vector
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
-    function onDocumentClick(event) {
-        // Calculate mouse position in normalized device coordinates
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+// Event listener for mouse clicks
+document.addEventListener('click', onDocumentClick);
 
-        // Set the raycaster's ray direction and origin based on the mouse position
-        raycaster.setFromCamera(mouse, camera);
+// Function to handle document click
+function onDocumentClick(event) {
+  // Calculate mouse position in normalized device coordinates
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        // Check for intersections with the shoeModel
-        const intersects = raycaster.intersectObject(shoeModel, true);
+  // Set the raycaster's ray direction and origin based on the mouse position
+  raycaster.setFromCamera(mouse, camera);
 
-        if (intersects.length > 0) {
-            // Get the clicked part
-            const clickedPart = intersects[0].object;
+  // Check for intersections with the shoeModel
+  const intersects = raycaster.intersectObject(shoeModel, true);
 
-            // Log the name of the clicked part to the console
-            console.log('Clicked part:', clickedPart.name);
-        }
-    }
+  if (intersects.length > 0) {
+    // Get the clicked part
+    const clickedPart = intersects[0].object;
+
+    // Log the name of the clicked part to the console
+    console.log('Clicked part:', clickedPart.name);
+  }
+}
+
+
 
     /*
     // Example usage of the stored material information
@@ -263,24 +276,24 @@ export default {
     camera.position.z = 5;
 
     // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 3);
     scene.add(ambientLight);
 
     // Add point lights
-    const pointLight1 = new THREE.PointLight(0xffffff, 1); // groen - linkse lamp als je inspawnt
-    pointLight1.position.set(-2.5, 2, 0);
+    const pointLight1 = new THREE.PointLight(0xffffff, 2); // groen - linkse lamp als je inspawnt
+    pointLight1.position.set(-2, 1, 0);
     scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0xffffff, 1); //blauw  - rechtse lamp als je inspawnt
-    pointLight2.position.set(2.5, 2, 0);
+    const pointLight2 = new THREE.PointLight(0xffffff, 2); //blauw  - rechtse lamp als je inspawnt
+    pointLight2.position.set(2, 1, 0);
     scene.add(pointLight2);
 
-    const pointLight3 = new THREE.PointLight(0xffffff, 1); // rood  - voorste lamp als je inspawnt
-    pointLight3.position.set(0, 2, 3);
+    const pointLight3 = new THREE.PointLight(0xffffff, 2); // rood  - voorste lamp als je inspawnt
+    pointLight3.position.set(0, 1, 2.5);
     scene.add(pointLight3);
 
-    const pointLight4 = new THREE.PointLight(0xffffff, 1); // geel - verste lamp als je inspawnt
-    pointLight4.position.set(0, 2, -3);
+    const pointLight4 = new THREE.PointLight(0xffffff, 2); // geel - verste lamp als je inspawnt
+    pointLight4.position.set(0, 2, -2);
     scene.add(pointLight4);
 
     /*
@@ -291,7 +304,7 @@ export default {
     */
 
 
-    /*
+
 
     // add pointlight helper
     const pointLightHelper1 = new THREE.PointLightHelper(pointLight1, 1);
@@ -306,7 +319,7 @@ export default {
     const pointLightHelper4 = new THREE.PointLightHelper(pointLight4, 1);
     scene.add(pointLightHelper4);
 
-    */
+
 
     /*
     // add pointlight 5 helper
@@ -346,3 +359,4 @@ export default {
   flex: 1;
 }
 </style>
+
