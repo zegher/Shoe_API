@@ -1,5 +1,4 @@
 <!-- src/App.vue -->
-
 <template>
   <div id="app">
     <div class="container">
@@ -7,12 +6,13 @@
       <div class="right-side">
         <div class="black-div">
           <h2>Laces Color</h2>
-          <!-- Button and ellipses added here -->
-            <div class="ellipses-container">
-              <div v-for="(color, index) in ellipseColors" :key="index" class="ellipse" :style="{ backgroundColor: color, borderColor: strokeColor }"></div>
-              <div class="bottom-right">
-            <button @click="handleButtonClick">Click me</button>
-            </div>
+          <div class="buttons-container">
+            <button @click="handleButtonClick('white')" class="color-button" :style="{ backgroundColor: 'white', borderColor: '#64f243' }">White</button>
+            <button @click="handleButtonClick('grey')" class="color-button" :style="{ backgroundColor: 'grey', borderColor: '#64f243' }">Grey</button>
+            <button @click="handleButtonClick('black')" class="color-button" :style="{ backgroundColor: 'black', borderColor: '#64f243' }">Black</button>
+            <button @click="handleButtonClick('red')" class="color-button" :style="{ backgroundColor: 'red', borderColor: '#64f243' }">Red</button>
+            <button @click="handleButtonClick('blue')" class="color-button" :style="{ backgroundColor: 'blue', borderColor: '#64f243' }">Blue</button>
+            <button @click="handleButtonClick('green')" class="color-button" :style="{ backgroundColor: 'green', borderColor: '#64f243' }">Green</button>
           </div>
         </div>
       </div>
@@ -29,54 +29,55 @@ export default {
   },
   data() {
     return {
-      ellipseColors: ['#FFFFFF', '#484848', '#060606', '#FF0000', '#0000FF', '#1BBF00'],
-      strokeColor: '#64F243',
+      shoeModel: null,
+      ellipseColors: [/* Add your colors here */],
     };
   },
   methods: {
-    handleButtonClick() {
-      // Add logic for button click if needed
-      console.log('Button clicked!');
+    handleButtonClick(color) {
+      if (this.shoeModel) {
+        this.shoeModel.traverse((child) => {
+          if (child.isMesh && child.name === 'laces') {
+            child.material.color.set(color);
+          }
+        });
+      }
     },
   },
 };
 </script>
 
+<!-- Add these styles to your App.vue file -->
 <style>
-/* Add styles if needed */
+  /* Add styles if needed */
+  .container {
+    display: flex;
+    height: 100vh;
+  }
 
-.container {
-  display: flex;
-  height: 100vh;
-}
+  .right-side {
+    flex: 1;
+    background-color: #141414;
+    color: #ffffff; /* Set text color */
+    padding: 20px; /* Adjust padding as needed */
+  }
 
-.right-side {
-  flex: 1;
-  background-color: #141414;
-  color: #ffffff; /* Set text color */
-  padding: 20px; /* Adjust padding as needed */
-}
+  .right-side h2 {
+    color: #ffffff; /* Set header text color */
+  }
 
-.right-side h2 {
-  color: #ffffff; /* Set header text color */
-}
+  .color-button {
+    width: 60px; /* Adjust width as needed */
+    height: 60px; /* Adjust height as needed */
+    border-radius: 50%;
+    border: 2px solid #ffffff; /* Set border color to white */
+    margin-right: 5px; /* Adjust margin as needed */
+    cursor: pointer;
+    color: #ffffff; /* Set button text color */
+  }
 
-.bottom-right {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  text-align: right;
-}
-
-.ellipses-container {
-  display: flex;
-  gap: 5px;
-}
-
-.ellipse {
-  width: 60px; /* Adjust width as needed */
-  height: 60px; /* Adjust height as needed */
-  border-radius: 50%;
-  border: 2px solid;
-}
+  .buttons-container {
+    display: flex;
+    gap: 5px;
+  }
 </style>
