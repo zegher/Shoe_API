@@ -91,7 +91,7 @@ export default {
     loader.load('models/shoe-optimized-arne.glb', (gltf) => {
       shoeModel = gltf.scene;
 
-      shoeModel.position.set(0, 0, 0);
+      shoeModel.position.set(0, 1, 0);
 
       shoeModel.rotation.x = Math.PI / 4;
       shoeModel.rotation.y = Math.PI / 50;
@@ -115,6 +115,41 @@ export default {
         folder.open();
       }
 
+      // Set up plane material
+     const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE.DoubleSide });
+
+      // Set up plane with rounded corners
+      const roundedRectShape = new THREE.Shape();
+      const radius = 0.5; // Adjust the radius for the rounded corners
+      roundedRectShape.moveTo(-2.5 + radius, -2.5);
+      roundedRectShape.lineTo(2.5 - radius, -2.5);
+      roundedRectShape.quadraticCurveTo(2.5, -2.5, 2.5, -2.5 + radius);
+      roundedRectShape.lineTo(2.5, 2.5 - radius);
+      roundedRectShape.quadraticCurveTo(2.5, 2.5, 2.5 - radius, 2.5);
+      roundedRectShape.lineTo(-2.5 + radius, 2.5);
+      roundedRectShape.quadraticCurveTo(-2.5, 2.5, -2.5, 2.5 - radius);
+      roundedRectShape.lineTo(-2.5, -2.5 + radius);
+      roundedRectShape.quadraticCurveTo(-2.5, -2.5, -2.5 + radius, -2.5);
+
+      const roundedRectGeometry = new THREE.ShapeGeometry(roundedRectShape);
+      const plane = new THREE.Mesh(roundedRectGeometry, planeMaterial);
+      plane.rotation.x = Math.PI / 2;
+      plane.position.y = -1;
+      scene.add(plane);
+
+     // Set up plane with mirror-like material
+        const mirrorMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,  // Set color to white for reflections
+            roughness: 0.1,   // Adjust the roughness
+            metalness: 0.9,   // Adjust the metalness
+            envMap: scene.background,  // Use the scene background as the environment map for reflections
+            side: THREE.DoubleSide,
+        });
+
+        const mirrorPlane = new THREE.Mesh(roundedRectGeometry, mirrorMaterial);
+        mirrorPlane.rotation.x = Math.PI / 2;
+        mirrorPlane.position.y = -1;
+        scene.add(mirrorPlane);
     });
 
     function updatePartColor(partName, color) {
