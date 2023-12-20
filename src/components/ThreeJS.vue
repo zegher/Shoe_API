@@ -1,12 +1,12 @@
 <!-- src/components/ThreeJS.vue -->
 <template>
-  <div class="left-side" ref="container"></div>
-  <div class="right-side">
-    <h1>Pick a color</h1>
-    <div class="color-container">
-      <div class="color" v-for="color in shoeColors" :style="{backgroundColor: color}" @click="changeColor(color)"></div>
+  <div class="container">
+    <div class="left-side" ref="container"></div>
+    <div class="right-side">
+      <h1>Pick a color</h1>
+        <div class="color" v-for="color in shoeColors" :style="{backgroundColor: color}" @click="changeColor(color)"></div>
+      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -160,6 +160,24 @@ export default {
       });
     }
 
+        // Add point lights
+    const pointLight1 = new THREE.PointLight(0xffffff, 1); // groen - linkse lamp als je inspawnt
+    pointLight1.position.set(-2.5, 2, 0);
+    scene.add(pointLight1);
+
+    const pointLight2 = new THREE.PointLight(0xffffff, 1); //blauw  - rechtse lamp als je inspawnt
+    pointLight2.position.set(2.5, 2, 0);
+    scene.add(pointLight2);
+
+    const pointLight3 = new THREE.PointLight(0xffffff, 1); // rood  - voorste lamp als je inspawnt
+    pointLight3.position.set(0, 2, 3);
+    scene.add(pointLight3);
+
+    const pointLight4 = new THREE.PointLight(0xffffff, 1); // geel - verste lamp als je inspawnt
+    pointLight4.position.set(0, 2, -3);
+    scene.add(pointLight4);
+
+
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -180,6 +198,20 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+}
+
+.left-side {
+  flex: 1;
+}
+
+.right-side {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 .color {
   width: 50px;
   height: 50px;
