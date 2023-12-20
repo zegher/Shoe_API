@@ -11,10 +11,11 @@
   "dependencies": {
     "dat.gui": "^0.7.9",
     "three": "^0.159.0",
-    "vue": "^3.3.11"
+    "vue": "^3.3.11",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",
-    "vite": "^5.0.8"
+    "vite": "^5.0.10"
   }
 }

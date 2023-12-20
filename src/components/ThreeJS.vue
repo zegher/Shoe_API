@@ -7,7 +7,9 @@
       <div class="color-container">
         <div class="color" v-for="color in shoeColors" :style="{ backgroundColor: color }" @click="changeColor(color)"></div>
       </div>
-      <button class="confirm-button" @click="confirmChoice">Confirm Choice</button>
+      <router-link to="/summary">
+        <button @click="navigateToSummary">Go to Summary</button>
+      </router-link>
     </div>
   </div>
 </template>
@@ -38,6 +40,16 @@ export default {
       },
     }
   },
+
+  setup() {
+    const navigateToSummary = () => {
+      // Emit the saveColors event with the reactive proxy
+      this.$emit('saveColors', this.yourReactiveProxy);
+    };
+
+    return { navigateToSummary };
+  },
+  
   mounted() {
     const canvasContainer = this.$refs.container;
     let windowWidth = window.innerWidth;
@@ -82,7 +94,6 @@ export default {
     controls.minDistance = 2; // Set your preferred minimum distance
     controls.maxDistance = 10; // Set your preferred maximum distance
 
-
     camera.position.z = 5;
 
     const light = new THREE.DirectionalLight(0xffffff, 3);
@@ -115,16 +126,16 @@ export default {
       console.log(this.shoeParams);
 
       const gui = new dat.GUI();
-    for (const partName in this.shoeParams) {
-      const folder = gui.addFolder(partName);
-      folder.addColor(this.shoeParams[partName], 'color').onChange(function (value) {
-        updatePartColor(partName, value);
-      });
-      folder.open();
+      for (const partName in this.shoeParams) {
+        const folder = gui.addFolder(partName);
+        folder.addColor(this.shoeParams[partName], 'color').onChange(function (value) {
+          updatePartColor(partName, value);
+        });
+        folder.open();
       }
 
       // Set up plane material
-     const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE.DoubleSide });
+      const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, side: THREE.DoubleSide });
 
       // Set up plane with rounded corners
       const roundedRectShape = new THREE.Shape();
@@ -145,19 +156,19 @@ export default {
       plane.position.y = -1;
       scene.add(plane);
 
-     // Set up plane with mirror-like material
-        const mirrorMaterial = new THREE.MeshStandardMaterial({
-            color: 0xffffff,  // Set color to white for reflections
-            roughness: 0.1,   // Adjust the roughness
-            metalness: 0.9,   // Adjust the metalness
-            envMap: scene.background,  // Use the scene background as the environment map for reflections
-            side: THREE.DoubleSide,
-        });
+      // Set up plane with mirror-like material
+      const mirrorMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffffff,  // Set color to white for reflections
+        roughness: 0.1,   // Adjust the roughness
+        metalness: 0.9,   // Adjust the metalness
+        envMap: scene.background,  // Use the scene background as the environment map for reflections
+        side: THREE.DoubleSide,
+      });
 
-        const mirrorPlane = new THREE.Mesh(roundedRectGeometry, mirrorMaterial);
-        mirrorPlane.rotation.x = Math.PI / 2;
-        mirrorPlane.position.y = -1;
-        scene.add(mirrorPlane);
+      const mirrorPlane = new THREE.Mesh(roundedRectGeometry, mirrorMaterial);
+      mirrorPlane.rotation.x = Math.PI / 2;
+      mirrorPlane.position.y = -1;
+      scene.add(mirrorPlane);
     });
 
     function updatePartColor(partName, color) {
@@ -168,7 +179,7 @@ export default {
       });
     }
 
-        // Add point lights
+    // Add point lights
     const pointLight1 = new THREE.PointLight(0xffffff, 1); // groen - linkse lamp als je inspawnt
     pointLight1.position.set(-2.5, 2, 0);
     scene.add(pointLight1);
@@ -185,7 +196,6 @@ export default {
     pointLight4.position.set(0, 2, -3);
     scene.add(pointLight4);
 
-
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -194,7 +204,11 @@ export default {
 
     animate();
   },
+
   methods: {
+    navigateToSummary() {
+      this.$router.push({ name: 'summary' });
+    },
     confirmChoice() {
       // Log or process the color values from Dat.GUI
       console.log('Confirmed Choices:', this.shoeParams);
