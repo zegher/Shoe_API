@@ -1,12 +1,13 @@
 <!-- src/components/ThreeJS.vue -->
 <template>
-  <div class="container">
-    <div class="left-side" ref="container"></div>
-    <div class="right-side">
-      <h1>Pick a color</h1>
-        <div class="color" v-for="color in shoeColors" :style="{backgroundColor: color}" @click="changeColor(color)"></div>
-      </div>
+  <div class="left-side" ref="container"></div>
+  <div class="right-side">
+    <h1>Pick a color</h1>
+    <div class="color-container">
+      <div class="color" v-for="color in shoeColors" :style="{backgroundColor: color}" @click="changeColor(color)"></div>
     </div>
+    <button @click="confirmChoice">Confirm Choice</button>
+  </div>
 </template>
 
 <script>
@@ -187,14 +188,19 @@ export default {
     animate();
   },
   methods: {
-    changeColor(color) {
-      // Assuming you want to change the color of a specific part on click
-      const partName = 'laces'; // Change this to the desired part
-      this.shoeParams[partName].color = color;
-      updatePartColor(partName, color);
-    }
+
+    confirmChoice() {
+      // Log or process the color values from Dat.GUI
+      console.log('Confirmed Choices:', this.shoeParams);
+
+      // Save the color values to local storage
+      localStorage.setItem('shoeColors', JSON.stringify(this.shoeParams));
+    }, // Add this closing brace
+
   }
+
 };
+
 </script>
 
 <style scoped>
@@ -218,5 +224,23 @@ export default {
   border-radius: 50%;
   margin: 10px;
   cursor: pointer;
+}
+
+.confirm-button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  margin-top: 20px;
+}
+
+.confirm-button:hover {
+  border-color: #00ff2a;
 }
 </style>
