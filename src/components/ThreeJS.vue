@@ -1,12 +1,14 @@
 <!-- src/components/ThreeJS.vue -->
 <template>
-  <div class="left-side" ref="container"></div>
-  <div class="right-side">
-    <h1>Pick a color</h1>
-    <div class="color-container">
-      <div class="color" v-for="color in shoeColors" :style="{backgroundColor: color}" @click="changeColor(color)"></div>
+  <div class="container">
+    <div class="left-side" ref="container"></div>
+    <div class="right-side">
+      <h1>Pick a color</h1>
+      <div class="color-container">
+        <div class="color" v-for="color in shoeColors" :style="{ backgroundColor: color }" @click="changeColor(color)"></div>
+      </div>
+      <button class="confirm-button" @click="confirmChoice">Confirm Choice</button>
     </div>
-    <button @click="confirmChoice">Confirm Choice</button>
   </div>
 </template>
 
@@ -108,12 +110,12 @@ export default {
       console.log(this.shoeParams);
 
       const gui = new dat.GUI();
-      for (const partName in this.shoeParams) {
-        const folder = gui.addFolder(partName);
-        folder.addColor(this.shoeParams[partName], 'color').onChange(function (value) {
-          updatePartColor(partName, value);
-        });
-        folder.open();
+    for (const partName in this.shoeParams) {
+      const folder = gui.addFolder(partName);
+      folder.addColor(this.shoeParams[partName], 'color').onChange(function (value) {
+        updatePartColor(partName, value);
+      });
+      folder.open();
       }
 
       // Set up plane material
@@ -188,24 +190,29 @@ export default {
     animate();
   },
   methods: {
-
     confirmChoice() {
       // Log or process the color values from Dat.GUI
       console.log('Confirmed Choices:', this.shoeParams);
 
-      // Save the color values to local storage
-      localStorage.setItem('shoeColors', JSON.stringify(this.shoeParams));
-    }, // Add this closing brace
+      // Save the color values to your Vue.js data object
+      for (const partName in this.shoeParams) {
+        const datGuiColor = this.shoeParams[partName].color;
+        // Additional logic to update Three.js model with the new color if needed
+      }
 
-  }
-
-};
-
+      // Optionally, you can trigger additional logic or API calls here
+    },
+  },
+}
 </script>
 
 <style scoped>
 .container {
   display: flex;
+}
+
+body {
+  background-color: #1a1a1a;
 }
 
 .left-side {
@@ -233,7 +240,7 @@ export default {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #000000;
   color: #fff;
   cursor: pointer;
   transition: border-color 0.25s;
