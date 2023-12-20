@@ -77,6 +77,11 @@ export default {
     }
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enablePan = false; // Disable panning downwards
+    controls.maxPolarAngle = Math.PI / 2; // Restrict panning above the horizon
+    controls.minDistance = 2; // Set your preferred minimum distance
+    controls.maxDistance = 10; // Set your preferred maximum distance
+
 
     camera.position.z = 5;
 
@@ -199,8 +204,6 @@ export default {
         const datGuiColor = this.shoeParams[partName].color;
         // Additional logic to update Three.js model with the new color if needed
       }
-
-      // Optionally, you can trigger additional logic or API calls here
     },
   },
 }
